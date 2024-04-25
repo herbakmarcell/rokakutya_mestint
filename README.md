@@ -1,1 +1,3 @@
-# rokakutya_mestint
+# Rókafogó Játék
+### Készítette: Herbák Marcell (QAGSVA)
+
