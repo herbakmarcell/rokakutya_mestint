@@ -9,12 +9,18 @@ namespace rokakutya_console.StateRepresentation
 {
     internal class FoxCatchingOperator : Operator
     {
-        public FoxCatchingOperator(int x, int y, char player)
+        public FoxCatchingOperator(int oldX, int oldY, int x, int y, char player)
         {
+            OldX = oldX;
+            OldY = oldY;
             X = x;
             Y = y;
             Player = player;
         }
+
+        public int OldX { get; set; }
+
+        public int OldY { get; set; }
 
         public int X { get; set; }
 
@@ -30,17 +36,7 @@ namespace rokakutya_console.StateRepresentation
             }
 
             FoxCatchingState newState = state.Clone() as FoxCatchingState;
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if ((state as FoxCatchingState).Board[i, j]  == Player)
-                    {
-                        newState.Board[i, j] = FoxCatchingState.EMPTY;
-                    }
-                }
-            }
-
+            newState.Board[OldX, OldY] = FoxCatchingState.EMPTY;
             newState.Board[X, Y] = Player;
             newState.ChangePlayer();
 
@@ -55,6 +51,24 @@ namespace rokakutya_console.StateRepresentation
             }
 
             FoxCatchingState foxCatchingState = state as FoxCatchingState;
+
+            if (X > 7 || X < 0 || Y > 7 || Y < 0)
+            {
+                return false;
+            }
+
+            if ((OldX - X != 1 || OldX - X == -1) && (OldY - Y != 1 || OldY - Y == -1))
+            {
+                return false;
+            }
+
+            if (foxCatchingState.CurrentPlayer == FoxCatchingState.PLAYER2)
+            {
+                if (OldY > Y)
+                {
+                    return false;
+                }
+            }
 
             return foxCatchingState.Board[X, Y] == FoxCatchingState.EMPTY &&
                 foxCatchingState.CurrentPlayer == Player;

@@ -11,56 +11,75 @@ namespace rokakutya_console.StateRepresentation
     internal class FoxCatchingState : State
     {
         public const char EMPTY = 'X';
-        public const char FOX = 'F';
-        public const char DOG1 = '1';
-        public const char DOG2 = '2';
-        public const char DOG3 = '3';
-        public const char DOG4 = '4';
+        public const char PLAYER1 = 'F';
+        public const char PLAYER2 = 'D';
 
         public char[,] Board { get; set; }
 
         public FoxCatchingState()
         {
             Board = new char[8, 8]{
-                {EMPTY,EMPTY, FOX ,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+                {EMPTY,EMPTY, PLAYER1 ,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
                 {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
                 {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
                 {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
                 {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
                 {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
                 {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,DOG1 ,EMPTY,DOG2 , EMPTY, DOG3 , EMPTY, DOG4 },
+                {EMPTY, PLAYER2 ,EMPTY, PLAYER2 , EMPTY,  PLAYER2 , EMPTY,  PLAYER2 },
             };
-            CurrentPlayer = FOX;
+            CurrentPlayer = PLAYER1;
         }
 
-        public void ChangePlayer(int index)
+        public void ChangePlayer()
         {
-            if (CurrentPlayer == FOX)
+            if (CurrentPlayer == PLAYER1)
             {
-                CurrentPlayer = index switch
-                {
-                    1 => DOG1,
-                    2 => DOG2,
-                    3 => DOG3,
-                    4 => DOG4,
-                    _ => throw new Exception("Got the dawg in yo?"),
-                };
+                CurrentPlayer = PLAYER2;
             }
             else
             {
-                CurrentPlayer = FOX;
+                CurrentPlayer = PLAYER1;
             }
         }
 
-
-
-
-
-
         public override object Clone()
         {
-            throw new NotImplementedException();
+            FoxCatchingState newState = new FoxCatchingState();
+
+            newState.Board = Board.Clone() as char[,];
+
+            newState.CurrentPlayer = CurrentPlayer;
+
+            return newState;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || !(obj is FoxCatchingState))
+            {
+                return false;
+            }
+
+            FoxCatchingState other = obj as FoxCatchingState;
+
+            if (CurrentPlayer != other.CurrentPlayer)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (Board[i, j] != other.Board[i, j])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public override int GetHeuristics(char player)

@@ -15,16 +15,13 @@ namespace rokakutya_console.StateRepresentation
         {
             Operators = new List<Operator>();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.FOX));
+                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.PLAYER1));
 
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.DOG1));
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.DOG2));
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.DOG3));
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.DOG4));
+                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.PLAYER2));
                 }
             }
         }
