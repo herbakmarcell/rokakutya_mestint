@@ -10,7 +10,7 @@ namespace rokakutya_console.StateRepresentation
 {
     internal class FoxCatchingState : State
     {
-        public const char EMPTY = 'X';
+        public const char EMPTY = ' ';
         public const char PLAYER1 = 'F';
         public const char PLAYER2 = 'D';
 
@@ -68,9 +68,9 @@ namespace rokakutya_console.StateRepresentation
                 return false;
             }
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < 8; j++)
                 {
                     if (Board[i, j] != other.Board[i, j])
                     {
@@ -82,14 +82,101 @@ namespace rokakutya_console.StateRepresentation
             return true;
         }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("    1   2   3   4   5   6   7   8");
+            for (int i = 0; i < 8; i++)
+            {
+                sb.AppendLine("  +---+---+---+---+---+---+---+---+");
+                sb.Append(string.Format("{0} |", i + 1));
+                for (int j = 0; j < 8; j++)
+                {
+                    sb.Append(string.Format(" {0} |", Board[i, j]));
+                }
+                sb.AppendLine();
+            }
+            sb.AppendLine("  +---+---+---+---+---+---+---+---+");
+            sb.AppendLine("Current player: " + CurrentPlayer);
+
+            return sb.ToString();
+        }
+
+        public override Status GetStatus()
+        {
+            if (GetFoxPos()[0] >= GetLastDogRow())
+            {
+                return Status.FOXWINS;
+            }
+
+            if (FoxCantMove())
+            {
+                return Status.DOGSWIN;
+            }
+
+            return Status.PLAYING;
+        }
+
         public override int GetHeuristics(char player)
         {
             throw new NotImplementedException();
         }
 
-        public override Status GetStatus()
+        private int GetLastDogRow()
         {
-            throw new NotImplementedException();
+            int lastDogRow = -1;
+
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (Board[i, j] == PLAYER2)
+                    {
+                        lastDogRow = i;
+                    }
+                }
+            }
+            return lastDogRow;
+        }
+        private int[] GetFoxPos()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (Board[i, j] == PLAYER1)
+                    {
+                        return [i,j];
+                    }
+                }
+            }
+            throw new Exception("WHO LET THE FOX OUT???");
+        }
+        private bool FoxCantMove()
+        {
+            int[] foxPos = GetFoxPos();
+
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (i == 0 && j == 0)
+                        continue;
+
+                    int newRow = foxPos[0] + i;
+                    int newColumn = foxPos[1] + j;
+
+                    if (newRow >= 0 && newRow < 8 &&
+                        newColumn >= 0 && newColumn < 8)
+                    {
+                        if (Board[newRow, newColumn] == EMPTY)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
     }
 }

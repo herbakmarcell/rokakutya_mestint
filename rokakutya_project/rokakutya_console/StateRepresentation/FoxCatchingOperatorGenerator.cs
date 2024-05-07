@@ -14,14 +14,19 @@ namespace rokakutya_console.StateRepresentation
         public FoxCatchingOperatorGenerator()
         {
             Operators = new List<Operator>();
-
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.PLAYER1));
-
-                    Operators.Add(new FoxCatchingOperator(i, j, FoxCatchingState.PLAYER2));
+                    for (int k = 0; k < 8; k++)
+                    {
+                        for (int l = 0; l < 8; l++)
+                        {
+                            Operators.Add(new FoxCatchingOperator(i, j, k, l, FoxCatchingState.PLAYER1));
+                            Operators.Add(new FoxCatchingOperator(i, j, k, l, FoxCatchingState.PLAYER2));
+                        }
+                    }
+                    
                 }
             }
         }

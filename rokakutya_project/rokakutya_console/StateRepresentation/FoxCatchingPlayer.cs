@@ -11,16 +11,15 @@ namespace rokakutya_console.StateRepresentation
     internal class FoxCatchingPlayer
     {
         public Solver Solver { get; set; }
-
+        
         public FoxCatchingPlayer()
         {
-            Solver = new MiniMax(new FoxCatchingOperatorGenerator(), 3);
+            Solver = new TrialAndError(new FoxCatchingOperatorGenerator());
         }
 
         public void Play()
         {
             State state = new FoxCatchingState();
-
             Console.WriteLine(state);
 
             while (state.GetStatus() == Status.PLAYING)
@@ -31,16 +30,18 @@ namespace rokakutya_console.StateRepresentation
                     int x = 0;
                     do
                     {
-                        Console.Write("X: ");
+                        Console.Write("New X: ");
                     } while (!int.TryParse(Console.ReadLine(), out x));
 
                     int y = 0;
                     do
                     {
-                        Console.Write("Y: ");
+                        Console.Write("New Y: ");
                     } while (!int.TryParse(Console.ReadLine(), out y));
 
-                    o = new FoxCatchingOperator(x - 1, y - 1, FoxCatchingState.PLAYER1);
+                    int[] foxPosition = FoxPosition(state);
+
+                    o = new FoxCatchingOperator(foxPosition[0], foxPosition[1], x - 1, y - 1, FoxCatchingState.PLAYER1);
 
                 } while (!o.IsApplicable(state));
 
@@ -49,13 +50,28 @@ namespace rokakutya_console.StateRepresentation
                 Console.WriteLine(state);
 
                 if (CheckStatus(state)) break;
-
+                
                 state = Solver.NextMove(state);
 
                 Console.WriteLine(state);
 
                 if (CheckStatus(state)) break;
             }
+        }
+
+        private int[] FoxPosition(State state)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((state as FoxCatchingState).Board[i,j] == FoxCatchingState.PLAYER1)
+                    {
+                        return [i, j];
+                    }
+                }
+            }
+            throw new Exception("WHO LET THE FOX OUT???");
         }
 
         private bool CheckStatus(State state)

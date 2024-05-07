@@ -1,10 +1,15 @@
-﻿namespace rokakutya_console
+﻿using rokakutya_console.StateRepresentation;
+
+namespace rokakutya_console
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            FoxCatchingPlayer player = new FoxCatchingPlayer();
+
+            player.Play();
+            Console.ReadLine();
         }
     }
 }
