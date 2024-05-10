@@ -22,6 +22,7 @@ namespace rokakutya_console.StateRepresentation
                     {
                         for (int l = 0; l < 8; l++)
                         {
+                            
                             Operators.Add(new FoxCatchingOperator(i, j, k, l, FoxCatchingState.PLAYER1));
                             Operators.Add(new FoxCatchingOperator(i, j, k, l, FoxCatchingState.PLAYER2));
                         }

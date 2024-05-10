@@ -14,7 +14,7 @@ namespace rokakutya_console.StateRepresentation
         
         public FoxCatchingPlayer()
         {
-            Solver = new TrialAndError(new FoxCatchingOperatorGenerator());
+            Solver = new MiniMax(new FoxCatchingOperatorGenerator(),3);
         }
 
         public void Play()
@@ -76,13 +76,13 @@ namespace rokakutya_console.StateRepresentation
 
         private bool CheckStatus(State state)
         {
-            if (state.GetStatus() == Status.FOXWINS)
+            if (state.GetStatus() == Status.PLAYER1WINS)
             {
                 Console.WriteLine("Player 1 wins!");
                 return true;
             }
 
-            if (state.GetStatus() == Status.DOGSWIN)
+            if (state.GetStatus() == Status.PLAYER2WINS)
             {
                 Console.WriteLine("Player 2 wins!");
                 return true;

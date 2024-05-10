@@ -8,6 +8,6 @@ namespace rokakutya_console.Interfaces
 {
     public enum Status
     {
-        FOXWINS, DOGSWIN, PLAYING
+        PLAYER1WINS, PLAYER2WINS, PLAYING
     }
 }

@@ -52,12 +52,12 @@ namespace rokakutya_console.StateRepresentation
 
             FoxCatchingState foxCatchingState = state as FoxCatchingState;
 
-            if (X > 7 || X < 0 || Y > 7 || Y < 0 || OldX == X || OldY == Y)
+            
+            if ((Math.Abs(X - OldX) != 1) || (Math.Abs(Y - OldY) != 1))
             {
                 return false;
             }
-
-            if ((Math.Abs(X - OldX) != 1) || (Math.Abs(Y - OldY) != 1))
+            if (X < 0 || X > 7 || Y < 0 || Y > 7 || OldX == X || OldY == Y)
             {
                 return false;
             }
@@ -73,6 +73,8 @@ namespace rokakutya_console.StateRepresentation
                     return false;
                 }
             }
+
+
 
             return foxCatchingState.Board[X, Y] == FoxCatchingState.EMPTY &&
                 foxCatchingState.CurrentPlayer == Player;

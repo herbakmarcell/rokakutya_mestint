@@ -19,14 +19,14 @@ namespace rokakutya_console.StateRepresentation
         public FoxCatchingState()
         {
             Board = new char[8, 8]{
-                {EMPTY,EMPTY, PLAYER1 ,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY,EMPTY,EMPTY,EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-                {EMPTY, PLAYER2 ,EMPTY, PLAYER2 , EMPTY,  PLAYER2 , EMPTY,  PLAYER2 },
+                {EMPTY,    EMPTY, PLAYER1 ,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY,    EMPTY,    EMPTY,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY,    EMPTY,    EMPTY,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY,    EMPTY,    EMPTY,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY,    EMPTY,    EMPTY,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY,    EMPTY,    EMPTY,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY,    EMPTY,    EMPTY,    EMPTY, EMPTY,     EMPTY, EMPTY,     EMPTY},
+                {EMPTY, PLAYER2 ,    EMPTY, PLAYER2 , EMPTY,  PLAYER2 , EMPTY,  PLAYER2 },
             };
             CurrentPlayer = PLAYER1;
         }
@@ -106,21 +106,120 @@ namespace rokakutya_console.StateRepresentation
         {
             if (GetFoxPos()[0] >= GetLastDogRow())
             {
-                return Status.FOXWINS;
+                return Status.PLAYER1WINS;
             }
 
             if (FoxCantMove())
             {
-                return Status.DOGSWIN;
+                return Status.PLAYER2WINS;
             }
 
             return Status.PLAYING;
         }
 
+        private static int WIN = 100;
+        private static int LOSE = -100;
+
+        private static int POSSIBLE_WIN = 10;
+        private static int POSSIBLE_LOSE = -7;
+        private static int POSSIBLE_LOSE_AVOIDED = 5;
+
+        private static int SINGLE_PIECE = 4;
+        private static int DOUBLE_PIECE = 10;
+        private static int TRIPLE_PIECE = 20;
+
+        private static int OPPONENT_SINGLE_PIECE = -4;
+        private static int OPPONENT_DOUBLE_PIECE = -10;
+        private static int OPPONENT_TRIPLE_PIECE = -20;
+
+
         public override int GetHeuristics(char player)
         {
-            throw new NotImplementedException();
+            if (GetStatus() == Status.PLAYER1WINS && player == PLAYER1) return WIN;
+            if (GetStatus() == Status.PLAYER2WINS && player == PLAYER2) return WIN;
+
+            if (GetStatus() == Status.PLAYER1WINS && player != PLAYER1) return LOSE;
+            if (GetStatus() == Status.PLAYER2WINS && player != PLAYER2) return LOSE;
+
+            int result = 0;
+
+            char currentPlayer;
+            char otherPlayer;
+
+            if (player == PLAYER1)
+            {
+                currentPlayer = PLAYER1;
+                otherPlayer = PLAYER2;
+            }
+            else
+            {
+                currentPlayer = PLAYER2;
+                otherPlayer = PLAYER1;
+            }
+
+            int currentCount = 0;
+            int otherCount = 0;
+
+            for (int i = 0; i < 8; i++)
+            {
+                currentCount = 0;
+                otherCount = 0;
+
+                for (int j = 0; j < 8; j++)
+                {
+                    if (Board[i, j] == currentPlayer) currentCount++;
+                    if (Board[i, j] == otherPlayer) otherCount++;
+                }
+                result += CalculateHeuristic(currentCount, otherCount);
+
+                currentCount = 0;
+                otherCount = 0;
+
+                for (int j = 0; j < 8; j++)
+                {
+                    if (Board[j, i] == currentPlayer) currentCount++;
+                    if (Board[j, i] == otherPlayer) otherCount++;
+                }
+                result += CalculateHeuristic(currentCount, otherCount);
+            }
+
+            currentCount = 0;
+            otherCount = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                if (Board[i, i] == currentPlayer) currentCount++;
+                if (Board[i, i] == otherPlayer) otherCount++;
+            }
+            result += CalculateHeuristic(currentCount, otherCount);
+
+            currentCount = 0;
+            otherCount = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                if (Board[i, 7 - i] == currentPlayer) currentCount++;
+                if (Board[i, 7 - i] == otherPlayer) otherCount++;
+            }
+            result += CalculateHeuristic(currentCount, otherCount);
+
+            return result;
         }
+
+        private int CalculateHeuristic(int currentCount, int otherCount)
+        {
+            int result = 0;
+
+            if (currentCount == 1 && otherCount == 2) result += POSSIBLE_LOSE_AVOIDED;
+            else if (currentCount == 1 && otherCount == 1) result += SINGLE_PIECE; 
+            else if (currentCount == 2) result += DOUBLE_PIECE; 
+            else if (currentCount == 3) result += TRIPLE_PIECE; 
+
+            if (otherCount == 1) result += OPPONENT_SINGLE_PIECE;
+            else if (otherCount == 2) result += OPPONENT_DOUBLE_PIECE;
+            else if (otherCount == 3) result += OPPONENT_TRIPLE_PIECE;
+
+            return result;
+        }
+
 
         private int GetLastDogRow()
         {
