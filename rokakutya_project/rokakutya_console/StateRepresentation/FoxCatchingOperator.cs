@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,39 +46,57 @@ namespace rokakutya_console.StateRepresentation
 
         public bool IsApplicable(State state)
         {
-            if (state == null || !(state is FoxCatchingState))
-            {
-                return false;
-            }
-
+            return IsValidState(state) &&
+                   IsNewPosition() &&
+                   IsOnBoard() &&
+                   IsDiagonal() &&
+                   IsOneSquare() &&
+                   IsEmpty(state) &&
+                   IsCharacterThePlayer(state) &&
+                   IsPlayerTurn(state) &&
+                   (Player == 'D' ? IsDaDogMovingForward() : true);
+        }
+        
+        private bool IsValidState(State state)
+        {
+            return state != null && state is FoxCatchingState;
+        }
+        private bool IsOnBoard()
+        {
+            return X >= 0 && X <= 7 && Y >= 0 && Y <= 7;
+        }
+        private bool IsNewPosition()
+        {
+            return OldX != X && OldY != Y;
+        }
+        private bool IsDiagonal()
+        {
+            return Math.Abs(OldX - X) == Math.Abs(OldY - Y);
+        }
+        private bool IsOneSquare()
+        {
+            return (Math.Abs(OldX - X) == 1) && (Math.Abs(OldY - Y) == 1);
+        }
+        private bool IsCharacterThePlayer(State state)
+        {
             FoxCatchingState foxCatchingState = state as FoxCatchingState;
 
-            
-            if ((Math.Abs(X - OldX) != 1) || (Math.Abs(Y - OldY) != 1))
-            {
-                return false;
-            }
-            if (X < 0 || X > 7 || Y < 0 || Y > 7 || OldX == X || OldY == Y)
-            {
-                return false;
-            }
+            return foxCatchingState.Board[OldX, OldY] == Player;
+        }
+        private bool IsEmpty(State state)
+        {
+            FoxCatchingState foxCatchingState = state as FoxCatchingState;
 
-            if (foxCatchingState.CurrentPlayer == FoxCatchingState.PLAYER2)
-            {
-                if (foxCatchingState.Board[OldX, OldY] != FoxCatchingState.PLAYER2)
-                {
-                    return false;
-                }
-                if (OldX < X)
-                {
-                    return false;
-                }
-            }
-
-
-
-            return foxCatchingState.Board[X, Y] == FoxCatchingState.EMPTY &&
-                foxCatchingState.CurrentPlayer == Player;
+            return foxCatchingState.Board[X, Y] == FoxCatchingState.EMPTY;
+        }
+        private bool IsPlayerTurn(State state)
+        {
+            FoxCatchingState foxCatchingState = state as FoxCatchingState;
+            return foxCatchingState.CurrentPlayer == Player;
+        }
+        private bool IsDaDogMovingForward()
+        {
+            return OldX > X;
         }
     }
 }
