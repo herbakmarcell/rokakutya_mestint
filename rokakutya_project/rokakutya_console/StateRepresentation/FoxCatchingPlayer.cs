@@ -14,7 +14,7 @@ namespace rokakutya_console.StateRepresentation
         
         public FoxCatchingPlayer()
         {
-            Solver = new MiniMax(new FoxCatchingOperatorGenerator(),3);
+            Solver = new MiniMaxWithAlphaBetaCutting(new FoxCatchingOperatorGenerator(),7);
         }
 
         public void Play()
