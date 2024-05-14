@@ -118,9 +118,7 @@ namespace rokakutya_console.StateRepresentation
         }
 
         private static int WIN = 100;
-        private static int POSSIBLE_WIN = 10;
         private static int LOSE = -100;
-        private static int POSSIBLE_LOSE = -10;
 
         private static int POSITIONAL_ADVANCE = 2;
         private static int POSITIONAL_ADVANCE_DOG = 1;
@@ -166,7 +164,6 @@ namespace rokakutya_console.StateRepresentation
 
             return result;
         }
-
 
         private int PassedDogs()
         {
