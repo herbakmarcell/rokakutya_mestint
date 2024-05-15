@@ -120,16 +120,17 @@ namespace rokakutya_console.StateRepresentation
         private static int WIN = 100;
         private static int LOSE = -100;
 
-        private static int POSITIONAL_ADVANCE = 2;
-        private static int POSITIONAL_ADVANCE_DOG = 1;
+        private static int POSITIONAL_ADVANCE = 1;
+        private static int POSITIONAL_ADVANCE_DOG = 3;
 
-        private static int DOG_BLOCKING_FOX = 9;
+        private static int DOG_BLOCKING_FOX = 11;
 
         private static int DOG_BLOCKING_DOG = 3;
 
         private static int FOX_PATH_BLOCKED = 4;
+        private static int FOX_DOG_DISTANCE = 1;
 
-        private static int PASSED_DOG = 10;
+        private static int PASSED_DOG = 15;
 
 
 
@@ -151,6 +152,7 @@ namespace rokakutya_console.StateRepresentation
                 result += DogBlockedByOtherDog();
                 result -= DogBlockingFoxPath();
                 result += PassedDogs();
+                result -= DogPositionInbalancing();
             }
             else
             {
@@ -160,11 +162,24 @@ namespace rokakutya_console.StateRepresentation
                 result -= DogBlockedByOtherDog();
                 result += DogBlockingFoxPath();
                 result -= PassedDogs();
+                result += DogPositionInbalancing();
             }
 
             return result;
         }
 
+        private int DogPositionInbalancing()
+        {
+            int[] foxPos = GetFoxPos();
+            List<int[]> dogPositions = GetDogPositions();
+            int subResult = 0;
+            foreach (int[] dogPos in dogPositions)
+            {
+                subResult += Math.Abs(dogPos[0] - foxPos[0]) * FOX_DOG_DISTANCE;
+                subResult += Math.Abs(dogPos[1] - foxPos[1]) * FOX_DOG_DISTANCE;
+            }
+            return subResult;
+        }
         private int PassedDogs()
         {
             int subResult = 0;
@@ -172,7 +187,7 @@ namespace rokakutya_console.StateRepresentation
             List<int[]> dogPositions = GetDogPositions();
             foreach (int[] dogPos in dogPositions)
             {
-                if (dogPos[0] <= foxPos[0])
+                if (dogPos[0] < foxPos[0])
                 {
                     subResult += PASSED_DOG;
                 }
@@ -246,7 +261,7 @@ namespace rokakutya_console.StateRepresentation
             int subResult = 0;
             int[] foxPos = GetFoxPos();
             
-            subResult += foxPos[1] * POSITIONAL_ADVANCE;
+            subResult += foxPos[0] * POSITIONAL_ADVANCE;
 
             return subResult;
         }   
