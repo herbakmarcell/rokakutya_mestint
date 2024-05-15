@@ -120,17 +120,18 @@ namespace rokakutya_console.StateRepresentation
         private static int WIN = 100;
         private static int LOSE = -100;
 
-        private static int POSSIBLE_WIN = 10;
-        private static int POSSIBLE_LOSE = -7;
-        private static int POSSIBLE_LOSE_AVOIDED = 5;
+        private static int POSITIONAL_ADVANCE = 1;
+        private static int POSITIONAL_ADVANCE_DOG = 3;
 
-        private static int SINGLE_PIECE = 4;
-        private static int DOUBLE_PIECE = 10;
-        private static int TRIPLE_PIECE = 20;
+        private static int DOG_BLOCKING_FOX = 11;
 
-        private static int OPPONENT_SINGLE_PIECE = -4;
-        private static int OPPONENT_DOUBLE_PIECE = -10;
-        private static int OPPONENT_TRIPLE_PIECE = -20;
+        private static int DOG_BLOCKING_DOG = 3;
+
+        private static int FOX_PATH_BLOCKED = 4;
+        private static int FOX_DOG_DISTANCE = 1;
+
+        private static int PASSED_DOG = 15;
+
 
 
         public override int GetHeuristics(char player)
@@ -143,84 +144,138 @@ namespace rokakutya_console.StateRepresentation
 
             int result = 0;
 
-            char currentPlayer;
-            char otherPlayer;
-
             if (player == PLAYER1)
             {
-                currentPlayer = PLAYER1;
-                otherPlayer = PLAYER2;
+                result += FoxPostitionalAdvance();
+                result -= DogPostitionalAdvance();
+                result -= CheckDogsOnFox();
+                result += DogBlockedByOtherDog();
+                result -= DogBlockingFoxPath();
+                result += PassedDogs();
+                result -= DogPositionInbalancing();
             }
             else
             {
-                currentPlayer = PLAYER2;
-                otherPlayer = PLAYER1;
+                result -= FoxPostitionalAdvance();
+                result += DogPostitionalAdvance();
+                result += CheckDogsOnFox();
+                result -= DogBlockedByOtherDog();
+                result += DogBlockingFoxPath();
+                result -= PassedDogs();
+                result += DogPositionInbalancing();
             }
-
-            int currentCount = 0;
-            int otherCount = 0;
-
-            for (int i = 0; i < 8; i++)
-            {
-                currentCount = 0;
-                otherCount = 0;
-
-                for (int j = 0; j < 8; j++)
-                {
-                    if (Board[i, j] == currentPlayer) currentCount++;
-                    if (Board[i, j] == otherPlayer) otherCount++;
-                }
-                result += CalculateHeuristic(currentCount, otherCount);
-
-                currentCount = 0;
-                otherCount = 0;
-
-                for (int j = 0; j < 8; j++)
-                {
-                    if (Board[j, i] == currentPlayer) currentCount++;
-                    if (Board[j, i] == otherPlayer) otherCount++;
-                }
-                result += CalculateHeuristic(currentCount, otherCount);
-            }
-
-            currentCount = 0;
-            otherCount = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                if (Board[i, i] == currentPlayer) currentCount++;
-                if (Board[i, i] == otherPlayer) otherCount++;
-            }
-            result += CalculateHeuristic(currentCount, otherCount);
-
-            currentCount = 0;
-            otherCount = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                if (Board[i, 7 - i] == currentPlayer) currentCount++;
-                if (Board[i, 7 - i] == otherPlayer) otherCount++;
-            }
-            result += CalculateHeuristic(currentCount, otherCount);
 
             return result;
         }
 
-        private int CalculateHeuristic(int currentCount, int otherCount)
+        private int DogPositionInbalancing()
         {
-            int result = 0;
-
-            if (currentCount == 1 && otherCount == 2) result += POSSIBLE_LOSE_AVOIDED;
-            else if (currentCount == 1 && otherCount == 1) result += SINGLE_PIECE; 
-            else if (currentCount == 2) result += DOUBLE_PIECE; 
-            else if (currentCount == 3) result += TRIPLE_PIECE; 
-
-            if (otherCount == 1) result += OPPONENT_SINGLE_PIECE;
-            else if (otherCount == 2) result += OPPONENT_DOUBLE_PIECE;
-            else if (otherCount == 3) result += OPPONENT_TRIPLE_PIECE;
-
-            return result;
+            int[] foxPos = GetFoxPos();
+            List<int[]> dogPositions = GetDogPositions();
+            int subResult = 0;
+            foreach (int[] dogPos in dogPositions)
+            {
+                subResult += Math.Abs(dogPos[0] - foxPos[0]) * FOX_DOG_DISTANCE;
+                subResult += Math.Abs(dogPos[1] - foxPos[1]) * FOX_DOG_DISTANCE;
+            }
+            return subResult;
         }
+        private int PassedDogs()
+        {
+            int subResult = 0;
+            int[] foxPos = GetFoxPos();
+            List<int[]> dogPositions = GetDogPositions();
+            foreach (int[] dogPos in dogPositions)
+            {
+                if (dogPos[0] < foxPos[0])
+                {
+                    subResult += PASSED_DOG;
+                }
+            }
 
+            return subResult;
+        }
+        private int DogBlockingFoxPath()
+        {
+            int subResult = 0;
+            int[] foxPos = GetFoxPos();
+            List<int[]> dogPositions = GetDogPositions();
+            foreach (int[] dogPos in dogPositions)
+            {
+                if (Math.Abs(foxPos[0] - dogPos[0]) == Math.Abs(foxPos[1] - dogPos[1]))
+                {
+                    subResult += FOX_PATH_BLOCKED;
+                }
+            }
 
+            return subResult;
+        }
+        private int DogBlockedByOtherDog()
+        {
+            List<int[]> dogPositions = GetDogPositions();
+            int subResult = 0;
+            foreach (int[] dogPos in dogPositions)
+            {
+                if ((dogPos[0] + 1 < 8 && dogPos[1] + 1 < 8) && (dogPos[0] - 1 > 0 && dogPos[1] - 1 > 0))
+                {
+                    if (Board[dogPos[0] - 1, dogPos[1] + 1] == PLAYER2)
+                    {
+                        subResult += DOG_BLOCKING_DOG;
+                    }
+                    if (Board[dogPos[0] - 1, dogPos[1] - 1] == PLAYER2)
+                    {
+                        subResult += DOG_BLOCKING_DOG;
+                    }
+                }
+            }
+            return subResult;
+        }
+        private int CheckDogsOnFox()
+        {
+            int subResult = 0;
+            int[] foxPos = GetFoxPos();
+            if ((foxPos[0] + 1 < 8 && foxPos[1] + 1 < 8) && (foxPos[0] - 1 > 0 && foxPos[1] - 1 > 0))
+            {
+                if (Board[foxPos[0] + 1, foxPos[1] + 1] == PLAYER2)
+                {
+                    subResult += DOG_BLOCKING_FOX;
+                }
+                if (Board[foxPos[0] + 1, foxPos[1] - 1] == PLAYER2)
+                {
+                    subResult += DOG_BLOCKING_FOX;
+                }
+                if (Board[foxPos[0] - 1, foxPos[1] + 1] == PLAYER2)
+                {
+                    subResult += DOG_BLOCKING_FOX;
+                }
+                if (Board[foxPos[0] - 1, foxPos[1] - 1] == PLAYER2)
+                {
+                    subResult += DOG_BLOCKING_FOX;
+                }
+            }
+
+            return subResult;
+        }
+        private int FoxPostitionalAdvance()
+        {
+            int subResult = 0;
+            int[] foxPos = GetFoxPos();
+            
+            subResult += foxPos[0] * POSITIONAL_ADVANCE;
+
+            return subResult;
+        }   
+        private int DogPostitionalAdvance() 
+        {
+            int subResult = 0;
+            List<int[]> dogPositions = GetDogPositions();
+            foreach (int[] dogPos in dogPositions)
+            {
+                subResult += (7 - dogPos[0]) * POSITIONAL_ADVANCE_DOG;
+            }
+
+            return subResult;
+        }
         private int GetLastDogRow()
         {
             int lastDogRow = -1;
@@ -236,6 +291,23 @@ namespace rokakutya_console.StateRepresentation
                 }
             }
             return lastDogRow;
+        }
+        private List<int[]> GetDogPositions() 
+        {
+            List<int[]> positions = new List<int[]>();
+
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (Board[i,j] == PLAYER2)
+                    {
+                        positions.Add(new int[] { i, j });
+                    }
+                }
+            }
+
+            return positions;
         }
         private int[] GetFoxPos()
         {
