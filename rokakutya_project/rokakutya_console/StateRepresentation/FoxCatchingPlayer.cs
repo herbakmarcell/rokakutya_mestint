@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace rokakutya_console.StateRepresentation
 {
-    internal class FoxCatchingPlayer
+    public class FoxCatchingPlayer
     {
         public Solver Solver { get; set; }
         

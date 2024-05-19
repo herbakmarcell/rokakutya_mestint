@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace rokakutya_console.StateRepresentation
 {
-    internal class FoxCatchingOperator : Operator
+    public class FoxCatchingOperator : Operator
     {
         public FoxCatchingOperator(int oldX, int oldY, int x, int y, char player)
         {
