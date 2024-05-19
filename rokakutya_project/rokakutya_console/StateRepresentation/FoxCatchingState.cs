@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace rokakutya_console.StateRepresentation
 {
-    internal class FoxCatchingState : State
+    public class FoxCatchingState : State
     {
         public const char EMPTY = ' ';
         public const char PLAYER1 = 'F';
