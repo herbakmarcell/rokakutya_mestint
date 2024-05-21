@@ -1,6 +1,6 @@
 ﻿namespace rokakutya_panel
 {
-    partial class Form1
+    partial class Panel
     {
         /// <summary>
         ///  Required designer variable.
@@ -677,7 +677,7 @@
             // comboBoxDifficulty
             // 
             comboBoxDifficulty.FormattingEnabled = true;
-            comboBoxDifficulty.Items.AddRange(new object[] { "Normál", "Nehéz", "KÖNYÖRTELEN" });
+            comboBoxDifficulty.Items.AddRange(new object[] { "Könnyű", "Normál", "KÖNYÖRTELEN" });
             comboBoxDifficulty.Location = new Point(451, 12);
             comboBoxDifficulty.Name = "comboBoxDifficulty";
             comboBoxDifficulty.Size = new Size(121, 23);
@@ -712,7 +712,7 @@
             labelResult.TabIndex = 67;
             labelResult.Text = "label2";
             // 
-            // Form1
+            // Panel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -785,8 +785,8 @@
             Controls.Add(button0_2);
             Controls.Add(button0_1);
             Controls.Add(button0_0);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "Panel";
+            Text = "Alfa Mini Rókaelkapó Max Kutyás Béta játék";
             ResumeLayout(false);
             PerformLayout();
         }

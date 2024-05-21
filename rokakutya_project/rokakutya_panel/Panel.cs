@@ -4,20 +4,20 @@ using rokakutya_console.StateRepresentation;
 
 namespace rokakutya_panel
 {
-    public partial class Form1 : Form
+    public partial class Panel : Form
     {
         MiniMax solver;
 
         FoxCatchingState state;
 
-        public Form1()
+        public Panel()
         {
             InitializeComponent();
 
             solver = new MiniMax(new FoxCatchingOperatorGenerator(), 0);
 
             state = new FoxCatchingState();
-
+            labelResult.Text = "Válassz nehézséget!";
             SyncState();
             DisableButtons();
         }
@@ -65,12 +65,12 @@ namespace rokakutya_panel
 
             switch (text)
             {
-                case "Normál":
-                    difficulty = 2;
+                case "Könnyû":
+                    difficulty = 3;
                     break;
 
-                case "Nehéz":
-                    difficulty = 4;
+                case "Normál":
+                    difficulty = 5;
                     break;
 
                 case "KÖNYÖRTELEN":
